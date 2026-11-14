@@ -1068,7 +1068,9 @@ export class ZabbixDatasource extends DataSourceWithBackend<ZabbixMetricsQuery, 
           scopedVars,
           utils.zabbixItemIdsTemplateFormat
         ),
-        textFilter: utils.replaceTemplateVars(this.templateSrv, query.textFilter, scopedVars),
+        // The text filter is used as a plain RegExp pattern in responseHandler, so unlike the
+        // item and host filters it must not be wrapped in /^...$/ after interpolation.
+        textFilter: this.templateSrv.replace(query.textFilter, scopedVars, utils.zabbixTemplateFormat),
         functions: utils.replaceVariablesInFuncParams(this.templateSrv, query.functions, scopedVars),
         tags: {
           ...query.tags,
